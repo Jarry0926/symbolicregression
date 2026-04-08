@@ -1,0 +1,9 @@
+**/__pycache__/**
+**checkpoint**
+**/.ipynb_checkpoints/*
+**results**
+*results.csv
+notebooks/*
+*.pyc
+model.pt
+test.py
