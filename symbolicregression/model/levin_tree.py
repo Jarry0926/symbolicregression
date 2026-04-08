@@ -13,6 +13,8 @@ class Node:
 
     def __lt__(self, other):
         return self.cost < other.cost
+    
+
 
 class LevinTree:
     def __init__(self, model, initial_state):
@@ -43,14 +45,14 @@ class LevinTree:
             return node.state, node
         for action_index in self.action_list:
             new_state = self.model.apply_action(deepcopy(node.state), idx=action_index) # force to take this action
-            probability = self.model.get_policy(new_state)[0][action_index] # and then retrieve probability from it
+            probability = self.model.get_policy(node.state)[0][action_index] # and then retrieve probability from it
             child_node = Node(new_state, node.depth + 1, np.log(probability) + node.log_probability)
             # Terminate at the first solution
             #if self.model.is_solution(new_state):
             #    return new_state, child_node
             # Skip constants
-            #if self._is_constant(action_index):
-            #    continue
+            if self._is_constant(action_index):
+                continue
             heapq.heappush(self.open_list, child_node)
             self.num_generated += 1
         return None, None # not finish training
