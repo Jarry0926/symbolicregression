@@ -43,9 +43,10 @@ class LevinTree:
         self.num_expansion += 1
         if self.model.is_solution(node.state):
             return node.state, node
+        policy_list = self.model.get_policy(node.state)[0]
         for action_index in self.action_list:
             new_state = self.model.apply_action(deepcopy(node.state), idx=action_index) # force to take this action
-            probability = self.model.get_policy(node.state)[0][action_index] # and then retrieve probability from it
+            probability = policy_list[action_index] # and then retrieve probability from it
             child_node = Node(new_state, node.depth + 1, np.log(probability) + node.log_probability)
             # Terminate at the first solution
             #if self.model.is_solution(new_state):
