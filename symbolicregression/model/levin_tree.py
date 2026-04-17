@@ -53,7 +53,7 @@ class LevinTree:
         policy_list_top_k, action_list_top_k = torch.topk(policy_list, k)
         policy_list_top_k = policy_list_top_k.detach().cpu().tolist()
         action_list_top_k = action_list_top_k.detach().cpu().tolist()
-        policy_list_top_k[1] *= 1e-2
+        policy_list_top_k[1] *= 1e-2 # noise
         for i in range(k):
             new_state = self.model.apply_action(deepcopy(node.state), idx=action_list_top_k[i])
             probability = policy_list_top_k[i]
