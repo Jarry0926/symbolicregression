@@ -472,6 +472,7 @@ class TransformerModel(nn.Module):
 
         # generated sentences
         state.generated = src_len.new(state.max_len, state.bs)  # upcoming output
+        #print(f"batch size: {state.bs}")
         state.generated.fill_(self.pad_index)  # fill upcoming ouput with <PAD>
         state.generated[0].fill_(self.eos_index)  # we use <EOS> for <BOS> everywhere
 
@@ -495,7 +496,6 @@ class TransformerModel(nn.Module):
         # print("INNER GET POLICY")
 
         self.cache = deepcopy(state.cache)
-
         # compute word scores
         tensor = self.forward(
             "fwd",
@@ -514,7 +514,7 @@ class TransformerModel(nn.Module):
         #print(scores.shape)
         # WE DONT UPDATE CACHE HERE AS WE ARE ONLY OBSERVING THE POLICY 
         # state.cache = deepcopy(self.cache)
-        return scores.softmax(1).cpu().numpy()
+        return scores.softmax(1)
 
     def cleanup(self, state, max_len=200):
         # sanity check
@@ -597,6 +597,7 @@ class TransformerModel(nn.Module):
 
         # generated sentences
         generated = src_len.new(max_len, bs)  # upcoming output
+        #print(f"batch size: {bs}")
         generated.fill_(self.pad_index)  # fill upcoming ouput with <PAD>
         generated[0].fill_(self.eos_index)  # we use <EOS> for <BOS> everywhere
 
@@ -643,7 +644,7 @@ class TransformerModel(nn.Module):
                 #print(f"Scores topK: {torch.topk(scores, 5)}")
                 # print(f"----- {next_words.shape}")
                 # print(f"----- {next_words}")
-                self.actions_taken.append(next_words.cpu().item())
+                #self.actions_taken.append(next_words.cpu().item())
             else:
                 next_words = torch.multinomial(
                     F.softmax(scores.float() / sample_temperature, dim=1), num_samples=1

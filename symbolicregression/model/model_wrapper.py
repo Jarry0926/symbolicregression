@@ -73,8 +73,6 @@ class ModelWrapper(nn.Module):
         env = self.env
         embedder, encoder, decoder = self.embedder, self.encoder, self.decoder
 
-
-
         ### Greedy solution.
         # print(type(decoder))
         policy = decoder.get_policy(
@@ -209,10 +207,12 @@ class ModelWrapper(nn.Module):
             ),
         ):
             x, x_len = embedder([input[idx] for idx in chunk])
+            #print(f"x_len: {x_len}")
             encoded = encoder("fwd", x=x, lengths=x_len, causal=False).transpose(0, 1)
             bs = encoded.shape[0]
 
             ### Greedy solution.
+            #print(f"Generation x_len: {x_len}")
             generations, _ = decoder.generate(
                 encoded,
                 x_len,
@@ -244,6 +244,7 @@ class ModelWrapper(nn.Module):
             # I think this is the refinement step in the paper (2.2)
             # or maybe sampling step before refinement
             if self.beam_type == "search":
+                print("MODEL WRAPPER search")
                 _, _, search_generations = decoder.generate_beam(
                     encoded,
                     x_len,
@@ -280,7 +281,7 @@ class ModelWrapper(nn.Module):
                     generations[i].extend(search_generations[i])
 
             elif self.beam_type == "sampling":
-                print("Sampling")
+                print("MODEL WRAPPER sampling")
                 num_samples = self.beam_size
                 encoded = (
                     encoded.unsqueeze(1)
@@ -288,7 +289,9 @@ class ModelWrapper(nn.Module):
                     .contiguous()
                     .view((bs * num_samples,) + encoded.shape[1:])
                 )
+                #print(f"sampling x_len: {x_len}")
                 x_len = x_len.unsqueeze(1).expand(bs, num_samples).contiguous().view(-1)
+                #print(f"sampling x_len: {x_len}")
                 sampling_generations, _ = decoder.generate(
                     encoded,
                     x_len,
@@ -320,6 +323,8 @@ class ModelWrapper(nn.Module):
             else:
                 raise NotImplementedError
             outputs.extend(generations)
+        # for chunk in chunks
+
         print("MODEL_WRAPPER generations")
         #for g in outputs:
         #    print(outputs)

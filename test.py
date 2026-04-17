@@ -45,19 +45,19 @@ est = symbolicregression.model.SymbolicTransformerRegressor(
 x = np.random.randn(100, 2)
 y = np.cos(2*np.pi*x[:,0])+x[:,1]**2
 
-#print("\n=================================================== Original ===================================================================")
-#torch.manual_seed(114514)
-#np.random.seed(1919810)
-#
-#est.fit(x,y)
-#
-##actions_taken = est.model.decoder.actions_taken
-##print(actions_taken)
-#replace_ops = {"add": "+", "mul": "*", "sub": "-", "pow": "**", "inv": "1/"}
-#model_str = est.retrieve_tree(with_infos=True)["relabed_predicted_tree"].infix()
-#for op,replace_op in replace_ops.items():
-#    model_str = model_str.replace(op,replace_op)
-#display(sp.parse_expr(model_str))
+print("\n=================================================== Original ===================================================================")
+torch.manual_seed(114514)
+np.random.seed(1919810)
+
+est.fit(x,y)
+
+#actions_taken = est.model.decoder.actions_taken
+#print(actions_taken)
+replace_ops = {"add": "+", "mul": "*", "sub": "-", "pow": "**", "inv": "1/"}
+model_str = est.retrieve_tree(with_infos=True)["relabed_predicted_tree"].infix()
+for op,replace_op in replace_ops.items():
+    model_str = model_str.replace(op,replace_op)
+display(sp.parse_expr(model_str))
 
 #print("\n====================================================== Debugging ================================================================")
 #torch.manual_seed(114514)
@@ -88,7 +88,7 @@ np.random.seed(1919810)
 
 state = est.init_state(x,y)
 lts = LevinTree(est.model, state)
-final_state = lts.fit()
+final_state = lts.search()
 est.prep_for_refinement(final_state)
 
 model_str = est.retrieve_tree(with_infos=True)["relabed_predicted_tree"].infix()

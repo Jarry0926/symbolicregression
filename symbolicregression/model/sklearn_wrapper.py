@@ -207,7 +207,7 @@ class SymbolicTransformerRegressor(BaseEstimator):
         scaler = utils_wrapper.StandardScaler() if self.rescale else None
         scale_params = {}
         if scaler is not None:
-            print("Is scaling")
+            print("SKLEARN_WRAPPER is scaling")
             scaled_X = []
             for i, x in enumerate(X):
                 scaled_X.append(scaler.fit_transform(x))
